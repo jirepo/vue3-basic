@@ -30,6 +30,9 @@ export default {
   * setup 컴포넌트 옵션은 컴포넌트가 생성되기 전에, props가 한 번 resolved 될 때 실행된다.
   * Composition API의 진입점 역할을 한다.
 
+**Vue 3의 장점**
+https://www.samsungsds.com/kr/insights/vue_js_3.html
+
 
 ```javascript
 <template>
@@ -229,6 +232,11 @@ return {
 ## \<script setup\> 타입
 Single File Component에서 새로운 Script Type인 \<script setup\>이 있다. 아직은 실험적인 상태이며 3.x 버전을 목표로 한다.
 \<script\> 태그의 최상의 레벨의 bindings들을 template에 노출한다.
+
+
+https://v3.vuejs.org/api/sfc-script-setup.html
+
+
 
 
 ```javascript
