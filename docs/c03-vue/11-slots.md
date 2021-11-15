@@ -1,174 +1,153 @@
-# Computed 와 Watch
+# Slot
 
-## Computed 
-다음과 같은 형식으로 작성한다. 
+자식 컴포넌트가 slot을 만들어 제공하면 부모 컴포넌트에서 자식 컴포넌트에 내용을 추가할 수 있다.
+
+## Slot 기본
+
+SlotButton.vue 자식 컴포넌트를 만든다. slot 태그를 작성한다.
 
 ```javascript
-const plusOne = computed( [function])
-```
-
-## 기초 샘플 
-카운트를 표시하고 카운트에 1을 더하는 간단한 Computed 변수를 작성할 것이다. 
-
-먼저, 버튼을 클릭할 때마다 1씩 증가하는 count예제를 다음과 같이 작성한다. 
-```html
+// SlotButton.vue
 <template>
   <div>
-    {{count}}
-    <br>
-    <button @click="onClick">Click Me</button>
+    <slot>제공된 컨텐츠가 없는 경우에 볼 수 있다.</slot>
   </div>
 </template>
-<script>
-
-import { defineComponent , ref, computed } from 'vue'
-
-export default {
-
-  setup(props, { emit }) {
-    
-    const count = ref(0) 
-
-    const onClick = () => {
-      count.value += 1 
-    }
-
-    return {
-      count ,
-      onClick 
-    };
-  },
-};
-</script>
-```
-button을 클릭할 때 마다 1씩 증가한 값을 볼 수 있다. 
-
-이제 computed를 작성해보자. 
-```html
-<template>
-  <div>
-    {{count}}
-    <br>
-    <button @click="onClick">Click Me</button>
-    <br>
-    {{plusOne}}
-  </div>
-</template>
-<script>
-
-import { defineComponent , ref, computed } from 'vue'
-
-export default {
-
-  setup(props, { emit }) {
-    
-    const count = ref(0) 
-
-    const onClick = () => {
-      count.value += 1 
-    }
-    const plusOne = computed ( () => count.value + 1)
-
-    return {
-      count ,
-      onClick ,
-      plusOne
-    };
-  },
-};
+<script setup>
 </script>
 ```
 
-> 템플릿 내에 표현식을 넣으면 편리하지만, 간단한 연산을 위한 부분입니다. 템플릿 안에서 너무 많은 연산을 하면 코드가 비대해지고 유지보수가 어렵습니다. 
-
-
-
-
-## Watch 
-대부분의 경우 computed 속성이 더 적절하지만, 사용자 지정 감시자(watcher) 가 필요한 경우도 있습니다. 이것이 Vue 가 watch 옵션을 통해 데이터의 변경에 대응하는 방법을 제공하는 이유입니다. 이는 데이터 변경에 대한 응답으로 비동기 혹은 비용이 많이 드는 작업을 수행하려는 경우가 가장 유용합니다.
-
-watch 형식은 다음과 같다. 
-```javascript
-watch( source, callback, options)
-```
-**source**
-watcher data source는 값을 리턴하는 getter function이거나 직접적으로 ref일 수 있다.
-
+SlotMain.vue를 작성한다. 이 컴포넌트는 SlotButton 컴포넌트를 포함한다. template에 컴포넌트를 추가하고 컴포넌트 시작 태그와 종료 태그에 내용을 입력하면 하위 컴포넌트에 그 내용이 표시된다.
 
 ```javascript
-const count = ref(0)
-watch(() => state.count, (newCount, oldCount) => {
-  // do Something
-})
-```
-
-### 기본 타입
-ref()를 사용하는 경우 count를 그대로 넘긴다.
-```javascript
-// 기본타입 watch 
-const count = ref(0)
-watch(count, (newCount, oldCount) => {
-   console.log("Old Count:" + oldCount)
-   console.log("New Count"  + newCount)
-})
-
-count.value = 11  // 값이 변하면 watch  실행 
-```
-
-
-### 객체 타입 
-reactive()를 사용하는 경우 getter function을 사용한다. state 변수를 그대로 넘기는 것이 아니라 () => state.count와 같이 넘긴다.
-
-
-```javascript
-// 객체 타입 watch
-const state = reactive({ count: 0})
-watch(() => state.count, (newCount, oldCount) => {
-  console.log("Old Count:" + oldCount)
-  console.log("New Count"  + newCount)
-})
-state.count = 13333 // 값이 변하면 watch 실행 
-```
-전체 코드는 다음과 같다. 
-```html
+// SlotMain.vue
 <template>
-  <div>
-    {{ count }} <br />
-  </div>
+  <div>Slot</div>
+  <slot-button>
+    이 내용이 slot에 들어간다.
+  </slot-button>
 </template>
-<script>
-import { defineComponent, ref, computed, watch, reactive } from "vue";
-
-export default defineComponent({
-  setup() {
-    const count = ref(0);
-    watch(count, (newCount, oldCount) => {
-      console.log("Old Count:" + oldCount);
-      console.log("New Count" + newCount);
-    });
-
-    count.value = 11; // 값이 변하면 watch  실행
-
-    const state = reactive({ count: 0 });
-    watch(
-      () => state.count,
-      (newCount, oldCount) => {
-        console.log("Old Count:" + oldCount);
-        console.log("New Count" + newCount);
-      }
-    );
-    state.count = 13333; // 값이 변하면 watch 실행
-
-    return {
-      count,
-    };
-  },
-});
+<script setup>
+import SlotButton from './SlotButton.vue'
 </script>
 ```
 
+slot은 HTML을 포함하여 어떠한 코드라도 포함할 수 있다. 심지어 컴포넌트를 포함시킬 수도 있다.
 
+만약 SlotButton. 컴포넌트의 템플릿이 \<slot> 코드를 가지고 있지 않다면, 태그 내부에 위치한 모든 컨텐츠는 무시된다.
 
+## 렌더 스코프
 
+다음과 같이 slot 내부에 데이터를 사용하는 경우에
 
+```javascript
+  <slot-button>
+    {{item.name}}
+  </slot-button>
+```
 
+이 slot은 slotButton의 스코프에 접근할 수 없다. 다시말하면 SlotButton안의 변수나 메소드들을 사용할 수 없다.
+
+> 부모 템플릿에 있는 모든 요소는 부모 스코프에서 컴파일되고, 자식 템플릿에 있는 모든 요소는 자식 스코프에서 컴파일됩니다
+
+## Fallback 컨텐츠
+
+부모 컴포넌트에서 자식 컴포넌트에 아무 것도 전달하지 않는 경우에 대체 컨텐츠가 없으면 아무것도 표현되지 않는다. 그래서 대체할 수 있는 컨텐츠를 넣어 두는 것이 좋다.
+
+즉 이렇게 호출하는 경우에
+
+```javascript
+<slot-button></slot-button>
+```
+
+아무것도 표시되지 않기 때문에 다음과 같이 대체 컨텐츠를 넣어 주는 것이 좋다.
+
+```javascript
+<slot>이건 대체 컨텐츠</slot>
+```
+
+## 이름을 갖는 Slot
+
+컴포넌트에 여러개의 슬롯을 둘 수 있는데 이름을 줄 수 있다. 이름 없는 슬롯은 default이다.
+
+NameSlot.vue를 다음과 같이 작성한다. 세 개의 슬롯을 정의했는데 두 개는 이름이 있는 것을 볼 수 있다.
+
+```javascript
+<template>
+  <hr>
+  여기는 Named Slot <br>
+  <slot name="header"></slot>
+  <slot></slot>
+  <slot name="footer"></slot>
+</template>
+<script setup>
+
+</script>
+```
+
+SlotMain.vue에서 NamedSlot을 임포트한다. template 태그와 v-slot 지시자를 사용하여 이름을 준다.
+
+```javascript
+<template>
+  <named-slot>
+    <template v-slot:header>
+      <h1>heder slot을 대체함</h1>
+    </template>
+    <template v-slot:footer>
+      <h1>footer slot을 대체함</h1>
+    </template>
+    <p>default slot을 대체함</p>
+  </named-slot>
+</template>
+<script setup>
+import NamedSlot from "./NamedSlot.vue";
+</script>
+```
+
+## 스코프를 갖는 Slot
+
+부모 컴포넌트의 범위에서 v-slot에 연결한 슬롯 속성(slotProps)를 사영하면 자식 컴포넌트의 데이터를 사용할 수 있다.
+
+자식 컴포넌트에 사용자 객체를 만든다.
+
+```javascript
+<script setup>
+
+import { reactive } from 'vue' 
+
+let user = reactive({
+  lastName: "김",
+  firstName: "장군"
+})
+
+</script>
+```
+
+슬롯을 정의할 때 v-bind를 사용한다. v-bind의 속성명을 user로 설정한다. 이름이 없는 default 슬롯을 만든다.
+
+```javascript
+<template>
+   여기는 slotProps를 사용한다. <br>
+  <slot v-bind:user="user">이건 이름이 없는 slot</slot>  
+</template>
+```
+
+부모 컴포넌트에서 default 슬롯에 대해서는 이름이 필요하지 않지만 이름을 지정했다. slotProps를 사용하여 user 객체에 접근할 수 있다.
+
+```javascript
+<template>
+  <slot-scope v-slot:default="slotProps">{{ slotProps.user.firstName }} </slot-scope>
+</template>
+```
+
+v-slot="slotProps" 대신에 v-slot="{user}"를 사용할 수 있습니다. user 객체를 바인딩한 slot 하나를 footer로 이름 붙여서 정의한다.
+
+```javascript
+<template v-slot:footer="{user}">{{user.firstName}}</template>
+```
+
+이제 user 객체를 slotProps를 사용하지 않고 {user}를 사용하여 접근할 수 있다.
+
+```javascript
+<template v-slot:footer="{user}">{{user.firstName}}</template>
+```
